@@ -1,34 +1,44 @@
-version: "3.8"
+version: "3.9"
 
 services:
-  frontend:
-    build: ./frontend
-    container_name: grimoire_frontend
-    ports:
-      - "3000:3000"
-    networks:
-      - grimoire_network
-
-  backend:
-    build: ./backend
-    container_name: grimoire_backend
-    ports:
-      - "3001:3001"
-    networks:
-      - grimoire_network
-
   postgres:
     image: postgres:15
     container_name: grimoire_postgres
+    restart: always
     environment:
       POSTGRES_DB: grimoire_db
       POSTGRES_USER: grimoire_user
       POSTGRES_PASSWORD: grimoire_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    networks:
-      - grimoire_network
 
-networks:
-  grimoire_network:
-    driver: bridge
+  backend:
+    build:
+      context: ./backend
+    container_name: grimoire_backend
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://grimoire_user:grimoire_pass@postgres:5432/grimoire_db
+      JWT_SECRET: "supersecret"
+      JWT_REFRESH_SECRET: "superrefresh"
+    ports:
+      - "3001:3001"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

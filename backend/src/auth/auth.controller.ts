@@ -1,36 +1,43 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CurrentUser } from '../common/decorators/user.decorator';
-import { JwtAuthGuard } from '../common/guards/jwt.guard';
-import { CurrentUserPayload } from './types/jwt-payload';
-import { Public } from '../common/decorators/public.decorator';
+import { RegisterDto, LoginDto, RefreshTokenDto } from './dto';
+import { Tokens } from './types/tokens.type';
+import { JwtAuthGuard } from './guards/jwt.auth.guard';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-  @Public()
   @Post('register')
-  register(@Body() dto: { email: string; password: string }) {
-    console.log('register', dto);
-    return this.authService.register(dto.email, dto.password);
+  async register(@Body() dto: RegisterDto): Promise<Tokens> {
+    return this.authService.register(dto);
   }
 
-  @Public()
   @Post('login')
-  login(@Body() dto: { email: string; password: string }) {
-    return this.authService.login(dto.email, dto.password);
+  async login(@Body() dto: LoginDto): Promise<Tokens> {
+    return this.authService.login(dto);
   }
 
-  @Public()
   @Post('refresh')
-  refresh(@Body() body: { userId: string; refreshToken: string }) {
-    return this.authService.refreshTokens(body.userId, body.refreshToken);
+  async refresh(@Body() dto: RefreshTokenDto): Promise<Tokens> {
+    return this.authService.refresh(dto.refreshToken);
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
-  logout(@CurrentUser() user: CurrentUserPayload) {
-    return this.authService.logout(user.id);
+  async logout(
+    @Req() req: Request & { user: { userId: string } },
+  ): Promise<void> {
+    return this.authService.logout(req.user.userId);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@Req() req: Request & { user: { userId: string; role: string } }): {
+    userId: string;
+    role: string;
+  } {
+    return req.user;
   }
 }

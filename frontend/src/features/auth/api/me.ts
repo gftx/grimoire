@@ -7,6 +7,6 @@ export type User = {
 };
 
 export async function getMe(): Promise<User> {
-  const response = await api.get<User>('/users/me');
+  const response = await api.get<User>('/auth/me');
   return response.data;
 }

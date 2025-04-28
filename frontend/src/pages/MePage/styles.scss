@@ -1,0 +1,58 @@
+.me-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: 80vh;
+
+  &__title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 32px;
+    color: #222;
+  }
+
+  &__card {
+    background-color: #ffffff;
+    padding: 32px 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__label {
+    font-weight: 600;
+    color: #666;
+  }
+
+  &__value {
+    color: #111;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  &__role {
+    &--scribe {
+      color: #3b82f6; // синий для SCRIBE
+    }
+
+    &--warden {
+      color: #8b5cf6; // фиолетовый для WARDEN
+    }
+  }
+
+  &__empty {
+    font-size: 18px;
+    color: #999;
+    margin-top: 40px;
+  }
+}

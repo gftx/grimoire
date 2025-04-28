@@ -34,10 +34,14 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  me(@Req() req: Request & { user: { userId: string; role: string } }): {
+  async me(
+    @Req() req: Request & { user: { userId: string; role: string } },
+  ): Promise<{
     userId: string;
+    email: string;
+    username: string;
     role: string;
-  } {
-    return req.user;
+  }> {
+    return this.authService.getMe(req.user.userId);
   }
 }

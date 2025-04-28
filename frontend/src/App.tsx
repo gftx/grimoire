@@ -1,15 +1,14 @@
-import { Routes, Route } from 'react-router-dom';
-import MePage from './pages/MePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+import { LoadingProvider } from "./providers/LoadingProvider";
+import { RoutesPage } from "./Routes";
+import { Loader } from "./shared/ui/Loader";
+import { Header } from "./widgets/Header";
 
-export default function App() {
+export const App = () => {
   return (
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/me" element={<MePage />} />
-      <Route path="*" element={<div>404</div>} />
-    </Routes>
+    <LoadingProvider>
+      <Loader />
+      <Header />
+      <RoutesPage />
+    </LoadingProvider>
   );
-}
+};

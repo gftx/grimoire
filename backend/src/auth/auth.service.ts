@@ -23,12 +23,39 @@ export class AuthService {
     const user = await this.prisma.user.create({
       data: {
         email: dto.email,
+        username: dto.username,
         password: hashedPassword,
         role: Role.SCRIBE,
       },
     });
 
     return this.issueTokensAndSave(user.id, user.role);
+  }
+
+  async getMe(userId: string): Promise<{
+    userId: string;
+    email: string;
+    username: string;
+    role: string;
+  }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        role: true,
+      },
+    });
+
+    if (!user) throw new UnauthorizedException('User not found');
+
+    return {
+      userId: user.id,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    };
   }
 
   async login(dto: LoginDto): Promise<Tokens> {

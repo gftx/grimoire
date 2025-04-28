@@ -1,0 +1,28 @@
+.loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background-color: #1f2937; /* тёмно-серый фон */
+  // background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader-container {
+  width: 256px; /* Ширина полоски загрузки */
+  height: 80px; /* Высота полоски загрузки */
+  background-color: #1f2937; /* тёмно-серый фон */
+  border-radius: 9999px;
+  position: relative;
+  overflow: hidden;
+}
+
+.loader-gandalf {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  position: absolute;
+  top: 10%;
+}

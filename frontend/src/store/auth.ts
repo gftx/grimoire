@@ -6,21 +6,17 @@ import { Role } from '@/entities/user/types/role';
 interface AuthState {
   user: User | null;
   isLoading: boolean;
-  isRefreshing: boolean;
   setUser: (user: User) => void;
   clearUser: () => void;
-  setRefreshing: (value: boolean) => void;
   checkAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isLoading: true,
-  isRefreshing: false,
 
   setUser: (user) => set({ user }),
   clearUser: () => set({ user: null }),
-  setRefreshing: (value) => set({ isRefreshing: value }),
 
   checkAuth: async () => {
     try {

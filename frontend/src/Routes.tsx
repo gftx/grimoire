@@ -5,7 +5,7 @@ import { useAuthStore } from "@/store/auth";
 import { AppRoutes } from "@/shared/config/routes";
 import { ProtectedRoute } from "@/shared/ui/ProtectedRoute";
 
-import { MePage, MainPage, LoginPage, RegisterPage } from "@/pages/index";
+import { MePage, MainPage, LoginPage, RegisterPage, VaultPage } from "@/pages/index";
 
 export const RoutesPage = () => {
   const { isLoading, checkAuth } = useAuthStore();
@@ -24,6 +24,7 @@ export const RoutesPage = () => {
       <Route path={AppRoutes.ROOT} element={<MainPage />} />
       <Route path={AppRoutes.LOGIN} element={<LoginPage />} />
       <Route path={AppRoutes.REGISTER} element={<RegisterPage />} />
+      <Route path={AppRoutes.REGISTER} element={<RegisterPage />} />
 
       {/* Приватные роуты */}
       <Route
@@ -31,6 +32,15 @@ export const RoutesPage = () => {
         element={
           <ProtectedRoute>
             <MePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={AppRoutes.VAULT}
+        element={
+          <ProtectedRoute>
+            <VaultPage />
           </ProtectedRoute>
         }
       />

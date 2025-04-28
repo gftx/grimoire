@@ -1,0 +1,22 @@
+.addIdeaForm {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 32px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 18px;
+  border: 2px solid #d0d0d0;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.2s border-color;
+
+  &:focus {
+    border-color: #7f5af0;
+  }
+}

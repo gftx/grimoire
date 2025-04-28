@@ -1,5 +1,5 @@
+import { useEffect, useState } from "react";
 import { useLoadingStore } from "@/store/loading";
-import { useAuthStore } from "@/store/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import Gandalf from "@/shared/assets/gendalf.png";
 
@@ -7,11 +7,31 @@ import "./styles.scss";
 
 export const Loader = () => {
   const isLoading = useLoadingStore((state) => state.isLoading);
-  const isRefreshing = useAuthStore((state) => state.isRefreshing);
+  const [isVisible, setIsVisible] = useState(false);
+  const [timer, setTimer] = useState<number | null>(null);
 
+  useEffect(() => {
+    if (isLoading) {
+      setIsVisible(true);
+      if (timer) {
+        clearTimeout(timer);
+      }
+    } else if (isVisible) {
+      const timeout = setTimeout(() => {
+        setIsVisible(false);
+      }, 1000);
+      setTimer(timeout);
+    }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
+  }, [isLoading, isVisible]);
+  
   return (
     <AnimatePresence>
-      {isLoading || isRefreshing && (
+      {isVisible && (
         <motion.div
           className='loader-overlay'
           initial={{ opacity: 0 }}

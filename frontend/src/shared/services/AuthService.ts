@@ -1,6 +1,5 @@
 import { authApi } from '@/shared/api/auth';
 import { useAuthStore } from '@/store/auth';
-import { api } from '@/shared/lib/axios';
 import { Role } from '@/entities/user/types/role';
 
 class AuthService {
@@ -50,25 +49,15 @@ class AuthService {
   private handleTokens(tokens: { accessToken: string; refreshToken: string }) {
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken);
-    this.setAuthorizationHeader(tokens.accessToken);
   }
 
   private clearTokens() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    this.removeAuthorizationHeader();
   }
 
   private getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
-  }
-
-  private setAuthorizationHeader(token: string) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  }
-
-  private removeAuthorizationHeader() {
-    delete api.defaults.headers.common['Authorization'];
   }
 }
 

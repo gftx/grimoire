@@ -3,6 +3,7 @@ export const AppRoutes = {
   LOGIN: '/login',
   REGISTER: '/register',
   ME: '/me',
+  VAULT: '/vault',
   PROJECTS: '/projects',
   PROJECT_BOARD: (id: string) => `/board/${id}`,
   SETTINGS: '/settings',

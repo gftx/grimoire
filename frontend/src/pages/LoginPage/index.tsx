@@ -25,7 +25,7 @@ export const LoginPage = () => {
 
   return (
     <div className="login-page">
-      <h1 className="login-page__title">Login to Grimoire 🧙‍♂️</h1>
+      <h1 className="login-page__title">Login to Grimoire</h1>
       <form className="login-page__form" onSubmit={handleSubmit(onSubmit)}>
         <div className="login-page__field">
           <label htmlFor="email">Email</label>

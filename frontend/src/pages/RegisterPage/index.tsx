@@ -26,7 +26,7 @@ export const RegisterPage = () => {
 
   return (
     <div className="register-page">
-      <h1 className="register-page__title">Register in Grimoire 🧙‍♂️</h1>
+      <h1 className="register-page__title">Register in Grimoire</h1>
       <form className="register-page__form" onSubmit={handleSubmit(onSubmit)}>
         <div className="register-page__field">
           <label htmlFor="email">Email</label>

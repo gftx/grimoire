@@ -15,16 +15,43 @@ datasource db {
 }
 
 model User {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  username       String  @unique
-  password       String
-  role           Role     @default(SCRIBE)
-  refreshToken   String?
-  createdAt      DateTime @default(now())
+  id           String   @id @default(uuid())
+  email        String   @unique
+  username     String   @unique
+  password     String
+  role         Role     @default(SCRIBE)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+
+  ideas        Idea[] // 👈 связь с идеями пользователя
+}
+
+model Idea {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  status      IdeaStatus @default(DRAFT)
+  tags        String[]
+  type        IdeaType   @default(IDEA)
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 enum Role {
   SCRIBE
   WARDEN
+}
+
+enum IdeaStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum IdeaType {
+  IDEA
+  SCRIPT
+  TASK
+  NOTE
 }

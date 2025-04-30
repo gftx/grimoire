@@ -1,11 +1,9 @@
 .ideaList {
-  width: 100%;
-  max-width: 800px;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
-  min-height: 200px;
-  align-items: center;
+  padding: 24px;
 }
 
 .empty {
@@ -16,6 +14,10 @@
 }
 
 .ideaCard {
+  min-width: 240px;
+  max-width: 300px;
+  flex: 1 1 240px;
+
   position: relative;
   background-color: #ffffff;
   border: 2px solid #e0e0e0;

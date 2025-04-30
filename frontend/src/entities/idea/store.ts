@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { ideasApi } from './api';
-import { Idea } from './model';
+import { Idea } from './types';
 
 interface IdeasStore {
   ideas: Idea[];

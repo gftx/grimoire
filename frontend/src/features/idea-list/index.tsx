@@ -1,14 +1,25 @@
-import { FC } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Idea } from '@/entities/idea/model';
-import { IdeaCard } from './IdeaCard';
-import styles from './styles.module.scss';
+import { FC, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Idea } from "@/entities/idea/types";
+import { IdeaCard } from "./IdeaCard";
+import { IdeaEditorInline } from "../idea-editor";
+import styles from "./styles.module.scss";
 
 interface IdeaListProps {
   ideas: Idea[];
 }
 
 export const IdeaList: FC<IdeaListProps> = ({ ideas }) => {
+  const [openIdeaId, setOpenIdeaId] = useState<string | null>(null);
+
+  const closeIdeaHandler = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    setOpenIdeaId(null);
+  };
+
+  console.log("openIdeaId", openIdeaId);
   return (
     <div className={styles.ideaList}>
       {ideas.length === 0 ? (
@@ -30,8 +41,17 @@ export const IdeaList: FC<IdeaListProps> = ({ ideas }) => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
               transition={{ duration: 0.3 }}
+              onClick={() => setOpenIdeaId(idea.id)}
             >
-              <IdeaCard idea={idea} />
+              {openIdeaId === idea.id ? (
+                <IdeaEditorInline
+                  idea={idea}
+                  onCancel={(e) => closeIdeaHandler(e)}
+                  onClose={() => setOpenIdeaId(null)}
+                />
+              ) : (
+                <IdeaCard idea={idea} />
+              )}
             </motion.div>
           ))}
         </AnimatePresence>

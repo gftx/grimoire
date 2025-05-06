@@ -15,33 +15,69 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  username     String   @unique
-  password     String
-  role         Role     @default(SCRIBE)
-  refreshToken String?
-  createdAt    DateTime @default(now())
+  id        String  @id @default(uuid())
+  email     String  @unique
+  password  String
+  username  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  ideas        Idea[] // 👈 связь с идеями пользователя
+  ideas Idea[] @relation("UserIdeas")
 }
 
 model Idea {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   title       String
   description String?
-  status      IdeaStatus @default(DRAFT)
+  status      IdeaStatus
+  type        IdeaType
   tags        String[]
-  type        IdeaType   @default(IDEA)
+
+  author      User         @relation("UserIdeas", fields: [authorId], references: [id], onDelete: Cascade)
   authorId    String
-  author      User       @relation(fields: [authorId], references: [id])
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+
+  kanbanItems KanbanItem[]
+  todos       Todo[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
-enum Role {
-  SCRIBE
-  WARDEN
+model KanbanBoard {
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  columns     KanbanColumn[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model KanbanColumn {
+  id        String        @id @default(uuid())
+  board     KanbanBoard   @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  boardId   String
+  title     String
+  order     Int
+  items     KanbanItem[]
+  createdAt DateTime       @default(now())
+}
+
+model KanbanItem {
+  id        String        @id @default(uuid())
+  column    KanbanColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  columnId  String
+  idea      Idea          @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  ideaId    String
+  order     Int
+  createdAt DateTime       @default(now())
+}
+
+model Todo {
+  id        String    @id @default(uuid())
+  idea      Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  ideaId    String
+  date      DateTime
+  createdAt DateTime   @default(now())
 }
 
 enum IdeaStatus {

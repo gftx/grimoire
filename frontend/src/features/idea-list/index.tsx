@@ -19,7 +19,6 @@ export const IdeaList: FC<IdeaListProps> = ({ ideas }) => {
     setOpenIdeaId(null);
   };
 
-  console.log("openIdeaId", openIdeaId);
   return (
     <div className={styles.ideaList}>
       {ideas.length === 0 ? (

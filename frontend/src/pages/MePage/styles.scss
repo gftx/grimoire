@@ -40,16 +40,6 @@
     text-align: right;
   }
 
-  &__role {
-    &--scribe {
-      color: #3b82f6; // синий для SCRIBE
-    }
-
-    &--warden {
-      color: #8b5cf6; // фиолетовый для WARDEN
-    }
-  }
-
   &__empty {
     font-size: 18px;
     color: #999;

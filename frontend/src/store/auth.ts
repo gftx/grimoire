@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { authApi } from '@/shared/api/auth';
 import { User } from '@/entities/user/types/user';
-import { Role } from '@/entities/user/types/role';
 
 interface AuthState {
   user: User | null;
@@ -26,7 +25,6 @@ export const useAuthStore = create<AuthState>((set) => ({
           id: me.userId,
           email: me.email,
           username: me.username,
-          role: me.role as Role,
         },
         isLoading: false,
       });

@@ -28,12 +28,6 @@ export const MePage = () => {
           <span className="me-page__label">Email:</span>
           <span className="me-page__value">{user.email}</span>
         </div>
-        <div className="me-page__row">
-          <span className="me-page__label">Role:</span>
-          <span className={`me-page__value me-page__role me-page__role--${user.role.toLowerCase()}`}>
-            {user.role}
-          </span>
-        </div>
       </div>
     </div>
   );

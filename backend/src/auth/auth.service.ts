@@ -7,7 +7,6 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import { RegisterDto, LoginDto } from './dto';
 import { Tokens } from './types/tokens.type';
-import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -25,18 +24,16 @@ export class AuthService {
         email: dto.email,
         username: dto.username,
         password: hashedPassword,
-        role: Role.SCRIBE,
       },
     });
 
-    return this.issueTokensAndSave(user.id, user.role);
+    return this.issueTokensAndSave(user.id);
   }
 
   async getMe(userId: string): Promise<{
     userId: string;
     email: string;
     username: string;
-    role: string;
   }> {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -44,7 +41,6 @@ export class AuthService {
         id: true,
         email: true,
         username: true,
-        role: true,
       },
     });
 
@@ -54,7 +50,6 @@ export class AuthService {
       userId: user.id,
       email: user.email,
       username: user.username,
-      role: user.role,
     };
   }
 
@@ -72,7 +67,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    return this.issueTokensAndSave(user.id, user.role);
+    return this.issueTokensAndSave(user.id);
   }
 
   async refresh(refreshToken: string): Promise<Tokens> {
@@ -91,7 +86,7 @@ export class AuthService {
       throw new ForbiddenException('Invalid refresh token');
     }
 
-    return this.issueTokensAndSave(user.id, user.role);
+    return this.issueTokensAndSave(user.id);
   }
 
   async logout(userId: string): Promise<void> {
@@ -101,11 +96,8 @@ export class AuthService {
     });
   }
 
-  private async issueTokensAndSave(
-    userId: string,
-    role: Role,
-  ): Promise<Tokens> {
-    const tokens = await this.issueTokens(userId, role);
+  private async issueTokensAndSave(userId: string): Promise<Tokens> {
+    const tokens = await this.issueTokens(userId);
 
     await this.prisma.user.update({
       where: { id: userId },
@@ -115,8 +107,8 @@ export class AuthService {
     return tokens;
   }
 
-  private async issueTokens(userId: string, role: Role): Promise<Tokens> {
-    const payload = { sub: userId, role };
+  private async issueTokens(userId: string): Promise<Tokens> {
+    const payload = { sub: userId };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {

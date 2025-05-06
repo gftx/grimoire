@@ -1,5 +1,4 @@
 import { api } from '@/shared/lib/axios';
-import { Role } from '@/entities/user/types/role';
 
 interface Tokens {
   accessToken: string;
@@ -20,13 +19,10 @@ interface LoginDto {
 interface RefreshTokenDto {
   refreshToken: string;
 }
-
-// Что приходит с ручки /auth/me
 interface MeResponse {
   userId: string;
   email: string;
   username: string;
-  role: Role; // строго наш enum
 }
 
 export const authApi = {

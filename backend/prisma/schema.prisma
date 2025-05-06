@@ -67,8 +67,9 @@ model KanbanItem {
   id        String        @id @default(uuid())
   column    KanbanColumn  @relation(fields: [columnId], references: [id], onDelete: Cascade)
   columnId  String
-  idea      Idea          @relation(fields: [ideaId], references: [id], onDelete: Cascade)
-  ideaId    String
+  idea      Idea?         @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  ideaId    String?
+  title     String?
   order     Int
   createdAt DateTime       @default(now())
 }

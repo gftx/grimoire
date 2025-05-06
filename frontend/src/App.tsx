@@ -1,6 +1,6 @@
 import { RoutesPage } from "./Routes";
 import { Loader } from "./shared/ui/Loader";
-import { Header } from "./widgets/Header";
+import { Header } from "./shared/ui/Header";
 
 export const App = () => {
   return (

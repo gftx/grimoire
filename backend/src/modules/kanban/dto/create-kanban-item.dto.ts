@@ -1,11 +1,16 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 
 export class CreateKanbanItemDto {
   @IsString()
   columnId!: string;
 
+  @IsOptional()
   @IsString()
-  ideaId!: string;
+  ideaId?: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
 
   @IsNumber()
   order!: number;

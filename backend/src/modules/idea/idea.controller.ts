@@ -12,7 +12,7 @@ import {
 import { IdeaService } from './idea.service';
 import { CreateIdeaDto } from './dto/create-idea.dto';
 import { UpdateIdeaDto } from './dto/update-idea.dto';
-import { JwtAuthGuard } from '../guards/jwt.auth.guard';
+import { JwtAuthGuard } from '../../guards/jwt.auth.guard';
 import { Request } from 'express';
 
 @Controller('ideas')

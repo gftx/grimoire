@@ -8,37 +8,78 @@ import { CreateKanbanItemDto } from './dto/create-kanban-item.dto';
 export class KanbanService {
   constructor(private readonly prisma: PrismaService) {}
 
-  createBoard(dto: CreateKanbanBoardDto) {
-    return this.prisma.kanbanBoard.create({ data: dto });
+  async createBoard(dto: CreateKanbanBoardDto) {
+    return this.prisma.kanbanBoard.create({
+      data: {
+        title: dto.title,
+        description: dto.description,
+      },
+    });
   }
 
-  createColumn(dto: CreateKanbanColumnDto) {
-    return this.prisma.kanbanColumn.create({ data: dto });
-  }
-
-  createItem(dto: CreateKanbanItemDto) {
-    return this.prisma.kanbanItem.create({ data: dto });
-  }
-
-  deleteItem(id: string) {
-    return this.prisma.kanbanItem.delete({ where: { id } });
-  }
-
-  deleteBoard(id: string) {
-    return this.prisma.kanbanBoard.delete({ where: { id } });
-  }
-
-  getBoards() {
+  async getBoards() {
     return this.prisma.kanbanBoard.findMany({
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async deleteBoard(id: string) {
+    return this.prisma.kanbanBoard.delete({
+      where: { id },
+    });
+  }
+
+  async createColumn(dto: CreateKanbanColumnDto) {
+    return this.prisma.kanbanColumn.create({
+      data: {
+        boardId: dto.boardId,
+        title: dto.title,
+        order: dto.order,
+      },
+    });
+  }
+
+  async getColumns(boardId: string) {
+    return this.prisma.kanbanColumn.findMany({
+      where: { boardId },
+      orderBy: { order: 'asc' },
       include: {
-        columns: {
+        items: {
+          orderBy: { order: 'asc' },
           include: {
-            items: {
-              include: { idea: true },
-            },
+            idea: true,
           },
         },
       },
+    });
+  }
+  async createItem(dto: CreateKanbanItemDto) {
+    return this.prisma.kanbanItem.create({
+      data: {
+        columnId: dto.columnId,
+        ideaId: dto.ideaId ?? undefined,
+        title: dto.title ?? undefined,
+        order: dto.order ?? 0,
+      },
+      include: {
+        idea: true,
+      },
+    });
+  }
+
+  async getItems(columnId: string) {
+    return this.prisma.kanbanItem.findMany({
+      where: { columnId },
+      orderBy: { order: 'asc' },
+      include: {
+        idea: true,
+      },
+    });
+  }
+
+  async deleteItem(id: string) {
+    return this.prisma.kanbanItem.delete({
+      where: { id },
     });
   }
 }

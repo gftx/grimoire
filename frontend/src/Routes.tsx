@@ -5,7 +5,15 @@ import { useAuthStore } from "@/store/auth";
 import { AppRoutes } from "@/shared/config/routes";
 import { ProtectedRoute } from "@/shared/ui/ProtectedRoute";
 
-import { MePage, MainPage, LoginPage, RegisterPage, VaultPage } from "@/pages/index";
+import {
+  MePage,
+  MainPage,
+  LoginPage,
+  RegisterPage,
+  VaultPage,
+  KanbanPage,
+  KanbanBoardPage,
+} from "@/pages/index";
 
 export const RoutesPage = () => {
   const { isLoading, checkAuth } = useAuthStore();
@@ -41,6 +49,24 @@ export const RoutesPage = () => {
         element={
           <ProtectedRoute>
             <VaultPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={AppRoutes.KANBAN}
+        element={
+          <ProtectedRoute>
+            <KanbanPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={`${AppRoutes.KANBAN}/:boardId`}
+        element={
+          <ProtectedRoute>
+            <KanbanBoardPage />
           </ProtectedRoute>
         }
       />

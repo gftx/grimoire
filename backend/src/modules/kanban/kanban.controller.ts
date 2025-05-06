@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { KanbanService } from './kanban.service';
 import { CreateKanbanBoardDto } from './dto/create-kanban-board.dto';
 import { CreateKanbanColumnDto } from './dto/create-kanban-column.dto';
@@ -13,19 +21,9 @@ export class KanbanController {
     return this.kanbanService.createBoard(dto);
   }
 
-  @Post('columns')
-  createColumn(@Body() dto: CreateKanbanColumnDto) {
-    return this.kanbanService.createColumn(dto);
-  }
-
-  @Post('items')
-  createItem(@Body() dto: CreateKanbanItemDto) {
-    return this.kanbanService.createItem(dto);
-  }
-
-  @Delete('items/:id')
-  deleteItem(@Param('id') id: string) {
-    return this.kanbanService.deleteItem(id);
+  @Get('boards')
+  getBoards() {
+    return this.kanbanService.getBoards();
   }
 
   @Delete('boards/:id')
@@ -33,8 +31,28 @@ export class KanbanController {
     return this.kanbanService.deleteBoard(id);
   }
 
-  @Get('boards')
-  getBoards() {
-    return this.kanbanService.getBoards();
+  @Post('columns')
+  createColumn(@Body() dto: CreateKanbanColumnDto) {
+    return this.kanbanService.createColumn(dto);
+  }
+
+  @Get('columns')
+  getColumns(@Query('boardId') boardId: string) {
+    return this.kanbanService.getColumns(boardId);
+  }
+
+  @Post('items')
+  createItem(@Body() dto: CreateKanbanItemDto) {
+    return this.kanbanService.createItem(dto);
+  }
+
+  @Get('items')
+  getItems(@Query('columnId') columnId: string) {
+    return this.kanbanService.getItems(columnId);
+  }
+
+  @Delete('items/:id')
+  deleteItem(@Param('id') id: string) {
+    return this.kanbanService.deleteItem(id);
   }
 }

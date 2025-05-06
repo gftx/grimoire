@@ -16,16 +16,14 @@ export class CreateIdeaDto {
   @IsString()
   description?: string;
 
-  @IsOptional()
   @IsEnum(IdeaStatus)
-  status?: IdeaStatus;
+  status!: IdeaStatus;
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
   tags?: string[];
 
-  @IsOptional()
   @IsEnum(IdeaType)
-  type?: IdeaType;
+  type!: IdeaType;
 }

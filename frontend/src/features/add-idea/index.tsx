@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useIdeasStore } from '@/entities/idea/store';
 import styles from './styles.module.scss';
+import { IdeaStatus, IdeaType } from '@/entities/idea/types';
 
 export const AddIdeaForm = () => {
   const [title, setTitle] = useState('');
@@ -14,8 +15,8 @@ export const AddIdeaForm = () => {
 
     await addIdea({
       title: title.trim(),
-      status: 'DRAFT',
-      type: 'IDEA',
+      status: IdeaStatus.DRAFT,
+      type: IdeaType.IDEA,
       tags: [],
     });
 

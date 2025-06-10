@@ -1,20 +1,12 @@
-FROM node:20-alpine AS builder
-
+FROM node:22.16.0-alpine AS builder
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm install
-
 COPY . .
 RUN npm run build
 
-FROM node:20-alpine
-
-WORKDIR /app
-
-COPY --from=builder /app ./
-
-RUN npm install -g serve
-
-EXPOSE 4173
-CMD ["npm", "run", "preview"]
+FROM nginx:1.26.0-alpine AS production
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY ../nginx/frontend.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80 443
+CMD ["nginx", "-g", "daemon off;"]

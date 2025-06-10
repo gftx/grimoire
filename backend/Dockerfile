@@ -1,17 +1,13 @@
-FROM node:23-alpine
+FROM node:22.16.0-alpine AS builder
 
-WORKDIR /usr/src/app
-
+WORKDIR /app
 COPY package*.json ./
-
 RUN npm install
-
 COPY . .
+RUN npm run build && npx prisma generate
 
-RUN npx prisma generate
-
-RUN npm run build
-
+FROM node:22.16.0-alpine
+WORKDIR /app
+COPY --from=builder /app ./
 EXPOSE 3000
-
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]

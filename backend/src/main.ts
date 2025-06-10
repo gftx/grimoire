@@ -8,7 +8,7 @@ async function bootstrap() {
   const port = config.get<number>('PORT') || 3001;
 
   app.enableCors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://grimoire.su'],
     credentials: true,
   });
 

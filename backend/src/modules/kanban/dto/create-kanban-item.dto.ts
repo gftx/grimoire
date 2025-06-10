@@ -6,10 +6,6 @@ export class CreateKanbanItemDto {
 
   @IsOptional()
   @IsString()
-  ideaId?: string;
-
-  @IsOptional()
-  @IsString()
   title?: string;
 
   @IsNumber()

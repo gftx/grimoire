@@ -1,9 +1,17 @@
-import { IsString, IsDateString } from 'class-validator';
+import { IsString, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateTodoDto {
   @IsString()
-  ideaId!: string;
+  title!: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsString()
+  tag?: string;
 
   @IsDateString()
-  date!: string; // ISO-строка даты, например: '2025-05-01'
+  date!: string;
 }

@@ -11,8 +11,8 @@ import {
   LoginPage,
   RegisterPage,
   VaultPage,
-  KanbanPage,
-  KanbanBoardPage,
+  // KanbanPage,
+  // KanbanBoardPage,
 } from "@/pages/index";
 
 export const RoutesPage = () => {
@@ -52,7 +52,7 @@ export const RoutesPage = () => {
           </ProtectedRoute>
         }
       />
-
+      {/* 
       <Route
         path={AppRoutes.KANBAN}
         element={
@@ -69,7 +69,7 @@ export const RoutesPage = () => {
             <KanbanBoardPage />
           </ProtectedRoute>
         }
-      />
+      /> */}
 
       {/* 404 */}
       <Route

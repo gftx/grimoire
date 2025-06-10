@@ -17,7 +17,6 @@ export class TodoService {
   getByDate(date: string) {
     return this.prisma.todo.findMany({
       where: { date: new Date(date) },
-      include: { idea: true },
     });
   }
 }

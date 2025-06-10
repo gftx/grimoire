@@ -1,27 +1,36 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "IdeaStatus" AS ENUM ('DRAFT', 'PUBLISHED');
 
-  - You are about to drop the column `refreshToken` on the `User` table. All the data in the column will be lost.
-  - You are about to drop the column `role` on the `User` table. All the data in the column will be lost.
+-- CreateEnum
+CREATE TYPE "IdeaType" AS ENUM ('IDEA', 'SCRIPT', 'TASK', 'NOTE');
 
-*/
--- DropForeignKey
-ALTER TABLE "Idea" DROP CONSTRAINT "Idea_authorId_fkey";
+-- CreateTable
+CREATE TABLE "User" (
+    "id" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
+    "refreshToken" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
--- DropIndex
-DROP INDEX "User_username_key";
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
 
--- AlterTable
-ALTER TABLE "Idea" ALTER COLUMN "status" DROP DEFAULT,
-ALTER COLUMN "type" DROP DEFAULT;
+-- CreateTable
+CREATE TABLE "Idea" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "status" "IdeaStatus" NOT NULL,
+    "type" "IdeaType" NOT NULL,
+    "tags" TEXT[],
+    "authorId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
--- AlterTable
-ALTER TABLE "User" DROP COLUMN "refreshToken",
-DROP COLUMN "role",
-ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
-
--- DropEnum
-DROP TYPE "Role";
+    CONSTRAINT "Idea_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "KanbanBoard" (
@@ -49,7 +58,7 @@ CREATE TABLE "KanbanColumn" (
 CREATE TABLE "KanbanItem" (
     "id" TEXT NOT NULL,
     "columnId" TEXT NOT NULL,
-    "ideaId" TEXT NOT NULL,
+    "title" TEXT,
     "order" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -57,14 +66,20 @@ CREATE TABLE "KanbanItem" (
 );
 
 -- CreateTable
-CREATE TABLE "DailyTask" (
+CREATE TABLE "Todo" (
     "id" TEXT NOT NULL,
-    "ideaId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "tag" TEXT,
     "date" TIMESTAMP(3) NOT NULL,
+    "completed" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "DailyTask_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Todo_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "Idea" ADD CONSTRAINT "Idea_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -74,9 +89,3 @@ ALTER TABLE "KanbanColumn" ADD CONSTRAINT "KanbanColumn_boardId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "KanbanItem" ADD CONSTRAINT "KanbanItem_columnId_fkey" FOREIGN KEY ("columnId") REFERENCES "KanbanColumn"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "KanbanItem" ADD CONSTRAINT "KanbanItem_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "DailyTask" ADD CONSTRAINT "DailyTask_ideaId_fkey" FOREIGN KEY ("ideaId") REFERENCES "Idea"("id") ON DELETE CASCADE ON UPDATE CASCADE;

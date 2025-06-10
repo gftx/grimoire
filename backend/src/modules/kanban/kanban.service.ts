@@ -46,9 +46,6 @@ export class KanbanService {
       include: {
         items: {
           orderBy: { order: 'asc' },
-          include: {
-            idea: true,
-          },
         },
       },
     });
@@ -57,12 +54,8 @@ export class KanbanService {
     return this.prisma.kanbanItem.create({
       data: {
         columnId: dto.columnId,
-        ideaId: dto.ideaId ?? undefined,
         title: dto.title ?? undefined,
         order: dto.order ?? 0,
-      },
-      include: {
-        idea: true,
       },
     });
   }
@@ -71,9 +64,6 @@ export class KanbanService {
     return this.prisma.kanbanItem.findMany({
       where: { columnId },
       orderBy: { order: 'asc' },
-      include: {
-        idea: true,
-      },
     });
   }
 

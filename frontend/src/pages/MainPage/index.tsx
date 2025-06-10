@@ -21,10 +21,10 @@ export const MainPage = () => {
               <p>Store and grow your ideas, drafts, scripts, and notes.</p>
             </Link>
 
-            <Link to={AppRoutes.KANBAN} className={styles.featureCard}>
+            {/* <Link to={AppRoutes.KANBAN} className={styles.featureCard}>
               <h2>📋 Kanban</h2>
               <p>Organize your tasks and projects visually.</p>
-            </Link>
+            </Link> */}
           </div>
         </div>
       ) : (

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authApi } from '@/shared/api/auth';
+import { authApi } from '@/entities/auth/api';
 import { User } from '@/entities/user/types/user';
 
 interface AuthState {

@@ -1,9 +1,12 @@
-import { authApi } from "@/shared/api/auth";
+import { authApi } from "@/entities/auth/api";
 import { useAuthStore } from "@/store/auth";
 
 class AuthService {
   async register(email: string, username: string, password: string) {
     const tokens = await authApi.register({ email, username, password });
+    if (!tokens) {
+      return;
+    }
     this.handleTokens(tokens);
     const me = await authApi.me();
     useAuthStore.getState().setUser({
@@ -15,12 +18,15 @@ class AuthService {
 
   async login(email: string, password: string) {
     const tokens = await authApi.login({ email, password });
+    if (!tokens) {
+      return;
+    }
     this.handleTokens(tokens);
     const me = await authApi.me();
     useAuthStore.getState().setUser({
       id: me.userId,
       email: me.email,
-      username: me.username
+      username: me.username,
     });
   }
 

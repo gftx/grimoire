@@ -1,5 +1,4 @@
 .editor {
-  
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -13,9 +12,19 @@
   max-width: 720px;
   margin: 0 auto;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  color: #1f2937; // основной тёмный текст
-
+  color: #1f2937;
   transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    width: 70vw;
+    padding: 24px;
+  }
+
+  @media (max-width: 768px) {
+    width: 90vw;
+    padding: 20px;
+    min-height: auto;
+  }
 }
 
 .titleInput {
@@ -30,6 +39,10 @@
 
   &:focus {
     border-color: #4f46e5;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 20px;
   }
 }
 
@@ -80,6 +93,10 @@
       border-color: #4f46e5;
       background-color: #fff;
     }
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
   }
 }
 

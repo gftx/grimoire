@@ -1,6 +1,6 @@
 import { api } from "@/shared/lib/axios";
-import { showSuccess, showError } from '@/shared/lib/toast';
-
+import { showSuccess, showError } from "@/shared/lib/toast";
+import { AxiosError } from "axios";
 
 interface Tokens {
   accessToken: string;
@@ -31,11 +31,11 @@ export const authApi = {
   register: async (dto: RegisterDto): Promise<Tokens | null> => {
     try {
       const response = await api.post("/auth/register", dto);
-      showSuccess('Successfully registered!');
+      showSuccess("Successfully registered!");
       return response.data;
     } catch (error) {
-      console.error("err", error)
-      showError('Register failed. Please check your credentials.');
+      console.error("err", error);
+      showError("Register failed. Please check your credentials.");
       return null;
     }
   },
@@ -43,11 +43,19 @@ export const authApi = {
   login: async (dto: LoginDto): Promise<Tokens | null> => {
     try {
       const response = await api.post("/auth/login", dto);
-      showSuccess('Successfully logged in!');
+      showSuccess("Successfully logged in!");
       return response.data;
-    } catch (error) {
-      console.error("err", error)
-      showError('Login failed. Please check your credentials.');
+    } catch (err) {
+      const error = err as AxiosError<{ message?: string }>;
+      if (error?.response?.status === 401) {
+        showError("Неверный логин или пароль");
+      } else if (error?.response?.data?.message) {
+        showError(error.response.data.message);
+      } else {
+        showError("Что-то пошло не так. Попробуй позже.");
+      }
+      console.error("err", error);
+      showError("Login failed. Please check your credentials.");
       return null;
     }
   },

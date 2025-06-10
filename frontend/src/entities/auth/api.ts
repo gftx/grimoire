@@ -46,14 +46,13 @@ export const authApi = {
       showSuccess("Successfully logged in!");
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<{ message?: string }>;
+      const error = err as AxiosError<string>;
       if (error?.response?.status === 401) {
         showError("Неверный логин или пароль");
-      } else if (error?.response?.data?.message) {
-        showError(error.response.data.message);
+      } else if (error?.response?.data) {
+        showError(error.response.data);
       } else {
         showError("Что-то пошло не так. Попробуй позже.");
-        showError(JSON.stringify(err, null, 2));
       }
       return null;
     }

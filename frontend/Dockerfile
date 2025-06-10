@@ -1,15 +1,15 @@
-FROM node:22.2.0-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci
+
+RUN npm install
 
 COPY . .
+
 RUN npm run build
 
-FROM nginx:1.26.0-alpine
+EXPOSE 4173
 
-RUN rm /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx/frontend.conf /etc/nginx/conf.d/default.conf
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]

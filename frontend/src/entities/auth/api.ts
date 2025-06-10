@@ -53,9 +53,8 @@ export const authApi = {
         showError(error.response.data.message);
       } else {
         showError("Что-то пошло не так. Попробуй позже.");
+        showError(JSON.stringify(err, null, 2));
       }
-      console.error("err", error);
-      showError("Login failed. Please check your credentials.");
       return null;
     }
   },

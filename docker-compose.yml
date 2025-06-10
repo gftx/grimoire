@@ -1,58 +1,48 @@
 version: '3.8'
-
 services:
   db:
     image: postgres:16
-    restart: always
-    environment:
-      POSTGRES_USER: grim
-      POSTGRES_PASSWORD: grimpass
-      POSTGRES_DB: grimoire
+    restart: unless-stopped
+    env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - grimoire
 
   backend:
     build: ./backend
-    env_file:
-      - .env
     depends_on:
       - db
-    networks:
-      - grimoire
+    env_file: .env
+    expose:
+      - 3000
 
   frontend:
     build: ./frontend
-    networks:
-      - grimoire
+    expose:
+      - 80
 
   nginx:
     image: nginx:1.26.0-alpine
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./frontend/dist:/usr/share/nginx/html:ro
-      - ./certbot/www:/var/www/certbot
-      - /etc/letsencrypt:/etc/letsencrypt
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./nginx/reverse-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
     depends_on:
-      - backend
       - frontend
-    networks:
-      - grimoire
+      - backend
 
   certbot:
     image: certbot/certbot
     volumes:
       - ./certbot/www:/var/www/certbot
-      - /etc/letsencrypt:/etc/letsencrypt
-    command: certonly --webroot --webroot-path=/var/www/certbot --email your@email.com --agree-tos --no-eff-email -d grimoire.su
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c '
+      certbot certonly --webroot --webroot-path=/var/www/certbot \
+        --email you@example.com --agree-tos --no-eff-email \
+        -d grimoire.su && \
+      nginx -s reload'"
 
 volumes:
   pgdata:
-
-networks:
-  grimoire:
-    driver: bridge

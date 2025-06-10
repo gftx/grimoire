@@ -1,51 +1,51 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     restart: unless-stopped
-    environment:
-      POSTGRES_DB: grimoire
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    container_name: grimoire_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - grimoire
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
 
   backend:
-    build: ./backend
-    restart: unless-stopped
+    build:
+      context: ./backend
+    container_name: grimoire_backend
     depends_on:
       - db
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/grimoire
-    networks:
-      - grimoire
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    ports:
+      - "${BACKEND_PORT}:3000"
 
   frontend:
-    build: ./frontend
-    restart: unless-stopped
-    networks:
-      - grimoire
-
-  nginx:
-    image: nginx:stable-alpine
-    restart: unless-stopped
+    build:
+      context: ./frontend
+    container_name: grimoire_frontend
     depends_on:
       - backend
+    ports:
+      - "${FRONTEND_PORT}:4173"
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: grimoire_nginx
+    depends_on:
       - frontend
+      - backend
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./certs:/etc/nginx/certs:ro
     ports:
       - "80:80"
       - "443:443"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-    networks:
-      - grimoire
 
 volumes:
   postgres_data:
-
-networks:
-  grimoire:

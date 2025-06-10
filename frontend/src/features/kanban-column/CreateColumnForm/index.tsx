@@ -16,7 +16,7 @@ export const CreateColumnForm: FC<CreateColumnFormProps> = ({ boardId, onSuccess
 
     try {
       setLoading(true);
-      await kanbanColumnApi.createColumn(boardId, title);
+      await kanbanColumnApi.createColumn(boardId, title, 0);
       onSuccess();
     } catch (error) {
       console.error('Failed to create column', error);

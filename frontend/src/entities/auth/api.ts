@@ -53,9 +53,9 @@ export const authApi = {
         showError(error.response.data);
       } else {
         showError("Что-то пошло не так. Попробуй позже.");
-        showError(JSON.stringify(error.status));
-        showError(JSON.stringify(error.code));
-        showError(JSON.stringify(error.cause));
+        showError("status" + JSON.stringify(error.status));
+        showError("code" + JSON.stringify(error.code));
+        showError("cause" + JSON.stringify(error.cause));
       }
       return null;
     }

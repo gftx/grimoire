@@ -42,6 +42,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: "0.0.0.0",
-    allowedHosts: ['grimoire.su'],
+    proxy: {
+      "/api": "http://backend:3000",
+    },
+    allowedHosts: ["grimoire.su"],
   },
 });

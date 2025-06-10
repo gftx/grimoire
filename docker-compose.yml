@@ -1,44 +1,56 @@
-version: "3.9"
+version: '3.9'
 
 services:
   postgres:
     image: postgres:15
-    container_name: grimoire_postgres
+    container_name: grimoire_db
     restart: always
     environment:
-      POSTGRES_DB: grimoire_db
-      POSTGRES_USER: grimoire_user
-      POSTGRES_PASSWORD: grimoire_pass
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - grimoire_net
 
   backend:
-    build:
-      context: ./backend
+    build: ./backend
     container_name: grimoire_backend
+    restart: always
+    env_file:
+      - .env
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://grimoire_user:grimoire_pass@postgres:5432/grimoire_db
-      JWT_SECRET: "supersecret"
-      JWT_REFRESH_SECRET: "superrefresh"
-    ports:
-      - "3001:3001"
+    networks:
+      - grimoire_net
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
+    build: ./frontend
+    container_name: grimoire_frontend
+    restart: always
+    env_file:
+      - .env
     depends_on:
       - backend
+    networks:
+      - grimoire_net
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: grimoire_nginx
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+    networks:
+      - grimoire_net
 
 volumes:
-  postgres_data:
+  pgdata:
+
+networks:
+  grimoire_net:
+    driver: bridge

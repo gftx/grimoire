@@ -1,12 +1,19 @@
-import { useAuthStore } from '@/store/auth';
-import { Link } from 'react-router-dom';
-import { AppRoutes } from '@/shared/config/routes';
-import styles from './styles.module.scss';
+import { useAuthStore } from "@/store/auth";
+import { Link, useNavigate } from "react-router-dom";
+import { AppRoutes } from "@/shared/config/routes";
+import styles from "./styles.module.scss";
+import { useEffect } from "react";
 
 export const MainPage = () => {
   const { user } = useAuthStore();
-
+  const navigate = useNavigate();
   const isAuthenticated = !!user;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(AppRoutes.TODAY);
+    }
+  }, [isAuthenticated]);
 
   return (
     <div className={styles.mainPage}>

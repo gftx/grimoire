@@ -33,8 +33,7 @@ services:
     networks:
       - grimoire_net
     depends_on:
-      backend:
-        condition: service_healthy
+      backend
     build:
       context: ./frontend
       dockerfile: Dockerfile

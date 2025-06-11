@@ -1,14 +1,16 @@
-# Build stage
+# Stage 1: Build the Vite frontend
 FROM node:22-alpine AS builder
 WORKDIR /app
 
+# Copy dependencies and install
 COPY package.json package-lock.json ./
 RUN npm ci --include=dev
 
+# Copy source and build
 COPY . .
 RUN npm run build
 
-# Production stage
+# Stage 2: Serve via nginx
 FROM nginx:1.25-alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 RUN chown -R nginx:nginx /usr/share/nginx/html

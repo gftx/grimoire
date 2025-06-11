@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:16-alpine
@@ -6,15 +8,11 @@ services:
     env_file: .env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./postgres.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/postgres.conf:/etc/postgresql/postgresql.conf
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - grimoire_net
 
   backend:
     build:
@@ -28,16 +26,6 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
-    volumes:
-      - ./backend/src:/app/src:ro
-      - /app/node_modules
-    networks:
-      - grimoire_net
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
 
   frontend:
     build:
@@ -45,12 +33,8 @@ services:
       dockerfile: Dockerfile
     container_name: grimoire_frontend
     restart: unless-stopped
-    depends_on:
-      - backend
     ports:
       - "5173:5173"
-    networks:
-      - grimoire_net
 
   nginx:
     image: nginx:1.25-alpine
@@ -65,12 +49,11 @@ services:
     depends_on:
       - frontend
       - backend
-    networks:
-      - grimoire_net
 
 networks:
-  grimoire_net:
+  default:
     driver: bridge
 
 volumes:
   postgres_data:
+  

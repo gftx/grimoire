@@ -1,24 +1,21 @@
-# Stage 1: Builder
-FROM node:22.16.0-alpine AS builder
-
+# Stage 1: Build
+FROM node:22-alpine AS builder
 WORKDIR /app
 
-# 1. Install dependencies
+# Install dependencies
 COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund && \
-    npm cache clean --force
+RUN npm ci
 
-# 2. Copy Prisma schema and generate client
+# Generate Prisma client
 COPY prisma ./prisma
 RUN npx prisma generate
 
-# 3. Build application
+# Build app
 COPY . .
 RUN npm run build
 
 # Stage 2: Runtime
-FROM node:22.16.0-alpine
-
+FROM node:22-alpine
 WORKDIR /app
 
 # Copy from builder
@@ -28,15 +25,9 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
 # Security
-RUN apk add --no-cache dumb-init && \
-    chown -R node:node /app
+RUN apk add --no-cache dumb-init
 USER node
 
 EXPOSE 3000
-
-# Healthcheck and startup
-HEALTHCHECK --interval=30s --timeout=5s \
-  CMD curl -f http://localhost:3000/api/health || exit 1
-
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["sh", "-c", "npx prisma migrate deploy && node dist/main.js"]

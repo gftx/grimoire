@@ -26,8 +26,15 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+    networks:
+      - grimoire_net
 
   frontend:
+    networks:
+      - grimoire_net
+    depends_on:
+      backend:
+        condition: service_healthy
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -51,6 +58,9 @@ services:
       - backend
 
 networks:
+  grimoire_net:
+    name: grimoire_network
+    driver: bridge
   default:
     driver: bridge
 

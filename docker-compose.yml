@@ -1,4 +1,3 @@
-# Убираем устаревшую опцию version — Compose сам определит версию по формату  [oai_citation:9‡forums.docker.com](https://forums.docker.com/t/docker-compose-yml-version-is-obsolete/141313?utm_source=chatgpt.com)
 services:
   db:
     image: postgres:16-alpine
@@ -6,7 +5,7 @@ services:
     restart: unless-stopped
     env_file: .env
     volumes:
-      - postgres_data:/var/lib/postgresql/data  # Named volume для персистентности  [oai_citation:10‡dev.to](https://dev.to/wallacefreitas/10-best-practices-for-writing-maintainable-docker-compose-files-4ca2?utm_source=chatgpt.com)
+      - postgres_data:/var/lib/postgresql/data
       - ./postgres/postgres.conf:/etc/postgresql/postgresql.conf
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     healthcheck:
@@ -16,41 +15,28 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
     container_name: grimoire_backend
-    restart: unless-stopped
     env_file: .env
+    restart: unless-stopped
     depends_on:
       db:
-        condition: service_healthy          # Ждем, пока БД станет "здоровой"  [oai_citation:11‡docs.docker.com](https://docs.docker.com/compose/how-tos/startup-order/?utm_source=chatgpt.com)
+        condition: service_healthy
     expose:
-      - 3000                                # Открываем порт только внутри сети
+      - 3000
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
     container_name: grimoire_frontend
     restart: unless-stopped
     depends_on:
       - backend
-    expose:
-      - 80
-
-  nginx:
-    image: nginx:1.25-alpine
-    container_name: grimoire_nginx
-    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf  # Конфиг Nginx
-      - /etc/letsencrypt:/etc/letsencrypt:ro                # SSL-сертификаты с хоста  [oai_citation:12‡phoenixnap.com](https://phoenixnap.com/kb/letsencrypt-docker?utm_source=chatgpt.com)
-    depends_on:
-      - frontend
-      - backend
+      - /etc/letsencrypt:/etc/letsencrypt:ro
 
-# Compose автоматом создает сеть default (bridge) — DNS-имена сервисов работают надёжно  [oai_citation:13‡docs.docker.com](https://docs.docker.com/compose/how-tos/networking/?utm_source=chatgpt.com) [oai_citation:14‡docs.docker.com](https://docs.docker.com/engine/network/drivers/bridge/?utm_source=chatgpt.com)
 volumes:
   postgres_data:
+  

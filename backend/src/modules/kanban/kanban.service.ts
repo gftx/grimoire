@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateKanbanBoardDto } from './dto/create-kanban-board.dto';
 import { CreateKanbanColumnDto } from './dto/create-kanban-column.dto';
@@ -8,25 +8,32 @@ import { CreateKanbanItemDto } from './dto/create-kanban-item.dto';
 export class KanbanService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createBoard(dto: CreateKanbanBoardDto) {
+  async createBoard(userId: string, dto: CreateKanbanBoardDto) {
     return this.prisma.kanbanBoard.create({
       data: {
-        title: dto.title,
-        description: dto.description,
+        ...dto,
+        userId,
       },
     });
   }
 
-  async getBoards() {
+  async getBoards(userId: string) {
     return this.prisma.kanbanBoard.findMany({
-      orderBy: { createdAt: 'asc' },
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
-  async deleteBoard(id: string) {
-    return this.prisma.kanbanBoard.delete({
-      where: { id },
+  async deleteBoard(userId: string, boardId: string) {
+    const board = await this.prisma.kanbanBoard.findUnique({
+      where: { id: boardId },
     });
+
+    if (!board || board.userId !== userId) {
+      throw new ForbiddenException('You do not own this board');
+    }
+
+    return this.prisma.kanbanBoard.delete({ where: { id: boardId } });
   }
 
   async createColumn(dto: CreateKanbanColumnDto) {

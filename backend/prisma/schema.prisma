@@ -23,7 +23,22 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
-  ideas Idea[] @relation("UserIdeas")
+  ideas  Idea[] @relation("UserIdeas")
+  todos  Todo[]
+  boards KanbanBoard[]
+}
+
+model Todo {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  tag         String?
+  date        DateTime
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
 }
 
 model Idea {
@@ -48,6 +63,9 @@ model KanbanBoard {
   columns     KanbanColumn[]
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
 }
 
 model KanbanColumn {
@@ -67,16 +85,6 @@ model KanbanItem {
   title     String?
   order     Int
   createdAt DateTime       @default(now())
-}
-
-model Todo {
-  id          String    @id @default(uuid())
-  title       String
-  description String?
-  tag         String?
-  date        DateTime
-  completed   Boolean   @default(false)
-  createdAt   DateTime  @default(now())
 }
 
 enum IdeaStatus {

@@ -1,7 +1,13 @@
-import { IsString, IsDateString, IsOptional } from 'class-validator';
+import {
+  IsDateString,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateTodoDto {
   @IsString()
+  @IsNotEmpty()
   title!: string;
 
   @IsOptional()
@@ -13,5 +19,5 @@ export class CreateTodoDto {
   tag?: string;
 
   @IsDateString()
-  date!: string;
+  date!: string; // ISO format
 }

@@ -3,17 +3,22 @@ import { CreateTodoDto, Todo, UpdateTodoDto } from "./types";
 
 export const todosApi = {
   async getByDate(date: string): Promise<Todo[]> {
-    const response = await api.get<Todo[]>('/todo', { params: { date } });
+    const response = await api.get<Todo[]>("/todo", { params: { date } });
     return response.data;
   },
 
   async create(todo: CreateTodoDto): Promise<Todo> {
-    const response = await api.post<Todo>('/todo', todo);
+    const response = await api.post<Todo>("/todo", todo);
     return response.data;
   },
 
-  async update(id: string, todo: UpdateTodoDto): Promise<Todo> {
-    const response = await api.patch<Todo>(`/todo/${id}`, todo);
+  async update(id: string, dto: UpdateTodoDto): Promise<Todo> {
+    const response = await api.patch<Todo>(`/todo/${id}`, dto);
+    return response.data;
+  },
+
+  async toggle(id: string, completed: boolean): Promise<Todo> {
+    const response = await api.patch<Todo>(`/todo/${id}/toggle`, { completed });
     return response.data;
   },
 

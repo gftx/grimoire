@@ -11,24 +11,28 @@ import { KanbanService } from './kanban.service';
 import { CreateKanbanBoardDto } from './dto/create-kanban-board.dto';
 import { CreateKanbanColumnDto } from './dto/create-kanban-column.dto';
 import { CreateKanbanItemDto } from './dto/create-kanban-item.dto';
+import { RequestUser } from 'src/common/decorators/request-user.decorator';
 
 @Controller('kanban')
 export class KanbanController {
   constructor(private readonly kanbanService: KanbanService) {}
 
   @Post('boards')
-  createBoard(@Body() dto: CreateKanbanBoardDto) {
-    return this.kanbanService.createBoard(dto);
+  createBoard(
+    @RequestUser() user: { id: string },
+    @Body() dto: CreateKanbanBoardDto,
+  ) {
+    return this.kanbanService.createBoard(user.id, dto);
   }
 
   @Get('boards')
-  getBoards() {
-    return this.kanbanService.getBoards();
+  getBoards(@RequestUser() user: { id: string }) {
+    return this.kanbanService.getBoards(user.id);
   }
 
   @Delete('boards/:id')
-  deleteBoard(@Param('id') id: string) {
-    return this.kanbanService.deleteBoard(id);
+  deleteBoard(@RequestUser() user: { id: string }, @Param('id') id: string) {
+    return this.kanbanService.deleteBoard(user.id, id);
   }
 
   @Post('columns')

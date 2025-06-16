@@ -2,34 +2,54 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class TodoService {
   constructor(private readonly prisma: PrismaService) {}
-
-  create(dto: CreateTodoDto) {
-    return this.prisma.todo.create({ data: dto });
+  async create(userId: string, dto: CreateTodoDto) {
+    return this.prisma.todo.create({
+      data: {
+        ...dto,
+        date: new Date(dto.date),
+        user: {
+          connect: { id: userId },
+        },
+      },
+    });
   }
 
-  update(id: string, dto: UpdateTodoDto) {
+  async findAll(userId: string, date?: string) {
+    const where: Prisma.TodoWhereInput = { userId };
+    if (date) {
+      const start = new Date(date);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(date);
+      end.setHours(23, 59, 59, 999);
+      where.date = { gte: start, lte: end };
+    }
+
+    return this.prisma.todo.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async update(userId: string, id: string, dto: UpdateTodoDto) {
     return this.prisma.todo.update({
       where: { id },
       data: dto,
     });
   }
 
-  delete(id: string) {
-    return this.prisma.todo.delete({ where: { id } });
+  async toggleCompleted(userId: string, id: string, completed: boolean) {
+    return this.prisma.todo.update({
+      where: { id },
+      data: { completed },
+    });
   }
 
-  getByDate(date: string) {
-    return this.prisma.todo.findMany({
-      where: {
-        date: new Date(date),
-      },
-      orderBy: {
-        createdAt: 'asc',
-      },
-    });
+  async remove(userId: string, id: string) {
+    return this.prisma.todo.delete({ where: { id } });
   }
 }

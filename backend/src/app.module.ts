@@ -5,6 +5,7 @@ import { PrismaModule } from './database/prisma.module';
 import { IdeaModule } from './modules/idea/idea.module';
 import { KanbanModule } from './modules/kanban/kanban.module';
 import { TodoModule } from './modules/todo/todo.module';
+import { JournalModule } from './modules/journal/journal.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TodoModule } from './modules/todo/todo.module';
     PrismaModule,
     KanbanModule,
     TodoModule,
+    JournalModule,
   ],
 })
 export class AppModule {}

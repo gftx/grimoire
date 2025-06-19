@@ -14,7 +14,9 @@ import {
   TodayPage,
   // KanbanPage,
   // KanbanBoardPage,
+  JournalPage,
 } from "@/pages/index";
+import { ErrorPage } from "@/pages/ErrorPage/index";
 
 export const RoutesPage = () => {
   const { isLoading, checkAuth } = useAuthStore();
@@ -56,13 +58,22 @@ export const RoutesPage = () => {
 
       <Route
         path={AppRoutes.TODAY}
-        element={
-          <ProtectedRoute>
+          element={
+            <ProtectedRoute>
             <TodayPage />
           </ProtectedRoute>
         }
       />
-  
+
+      <Route
+        path={AppRoutes.JOURNAL}
+        element={
+          <ProtectedRoute>
+            <JournalPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* 
       <Route
         path={AppRoutes.KANBAN}
@@ -85,7 +96,7 @@ export const RoutesPage = () => {
       {/* 404 */}
       <Route
         path={AppRoutes.NOT_FOUND}
-        element={<div>404 | Page Not Found</div>}
+        element={<ErrorPage />}
       />
     </Routes>
   );

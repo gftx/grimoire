@@ -9,5 +9,6 @@ export const AppRoutes = {
   PROJECT_BOARD: (id: string) => `/board/${id}`,
   SETTINGS: '/settings',
   TODAY: '/today',
+  JOURNAL: '/journal',
   NOT_FOUND: '*',
 } as const;

@@ -19,20 +19,23 @@ export class KanbanController {
 
   @Post('boards')
   createBoard(
-    @RequestUser() user: { id: string },
+    @RequestUser() user: { userId: string },
     @Body() dto: CreateKanbanBoardDto,
   ) {
-    return this.kanbanService.createBoard(user.id, dto);
+    return this.kanbanService.createBoard(user.userId, dto);
   }
 
   @Get('boards')
-  getBoards(@RequestUser() user: { id: string }) {
-    return this.kanbanService.getBoards(user.id);
+  getBoards(@RequestUser() user: { userId: string }) {
+    return this.kanbanService.getBoards(user.userId);
   }
 
   @Delete('boards/:id')
-  deleteBoard(@RequestUser() user: { id: string }, @Param('id') id: string) {
-    return this.kanbanService.deleteBoard(user.id, id);
+  deleteBoard(
+    @RequestUser() user: { userId: string },
+    @Param('id') id: string,
+  ) {
+    return this.kanbanService.deleteBoard(user.userId, id);
   }
 
   @Post('columns')

@@ -6,6 +6,7 @@ import { VaultPage } from "./VaultPage";
 import { KanbanPage } from "./KanbanPage";
 import { KanbanBoardPage } from "./KanbanBoardPage";
 import { TodayPage } from "./TodayPage";
+import { JournalPage } from "./JournalPage";
 
 export {
   MePage,
@@ -15,5 +16,6 @@ export {
   VaultPage,
   KanbanPage,
   KanbanBoardPage,
-  TodayPage
+  TodayPage,
+  JournalPage,
 };

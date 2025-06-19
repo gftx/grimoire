@@ -11,13 +11,8 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "favicon.ico", "apple-touch-icon.png"],
       manifest: {
-        name: "Grimoire",
         short_name: "Grimoire",
-        description: "Grimoire - your magical ideas and tasks manager",
-        theme_color: "#f9fafb",
-        background_color: "#f9fafb",
-        display: "standalone",
-        start_url: "/",
+        name: "Grimoire",
         icons: [
           {
             src: "/pwa-192x192.png",
@@ -29,13 +24,12 @@ export default defineConfig({
             sizes: "512x512",
             type: "image/png",
           },
-          {
-            src: "/apple-touch-icon.png",
-            sizes: "180x180",
-            type: "image/png",
-            purpose: "any maskable",
-          },
         ],
+        start_url: ".",
+        display: "standalone",
+        background_color: "#f9fafb",
+        theme_color: "#4f46e5",
+        orientation: "portrait-primary",
       },
     }),
   ],

@@ -43,9 +43,6 @@ export const MainPage = () => {
   return (
     <div className={styles.mainPage}>
       <img src={gendalf} alt="wizard" className={styles.illustration} />
-      <div className={styles.tagline}>
-        "magic is just science we don't understand yet."
-      </div>
       <div className={styles.fantasyQuote}>{randomQuote}</div>
       {isAuthenticated ? (
         <div className={styles.authenticated}>

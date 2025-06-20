@@ -1,6 +1,7 @@
 import { api } from "@/shared/lib/axios";
 import { showSuccess, showError } from "@/shared/lib/toast";
-import { AxiosError } from "axios";
+import { AxiosError, AxiosRequestConfig } from "axios";
+import { setTokens, clearTokens } from "@/shared/lib/token";
 
 interface Tokens {
   accessToken: string;
@@ -30,7 +31,12 @@ interface MeResponse {
 export const authApi = {
   register: async (dto: RegisterDto): Promise<Tokens | null> => {
     try {
-      const response = await api.post("/auth/register", dto);
+      const response = await api.post(
+        "/auth/register",
+        dto,
+        { skipAuthRefresh: true } as AxiosRequestConfig
+      );
+      setTokens(response.data);
       showSuccess("Successfully registered!");
       return response.data;
     } catch (error) {
@@ -42,7 +48,12 @@ export const authApi = {
 
   login: async (dto: LoginDto): Promise<Tokens | null> => {
     try {
-      const response = await api.post("/auth/login", dto);
+      const response = await api.post(
+        "/auth/login",
+        dto,
+        { skipAuthRefresh: true } as AxiosRequestConfig
+      );
+      setTokens(response.data);
       showSuccess("Successfully logged in!");
       return response.data;
     } catch (err) {
@@ -53,9 +64,6 @@ export const authApi = {
         showError(error.response.data);
       } else {
         showError("Что-то пошло не так. Попробуй позже.");
-        showError("status" + JSON.stringify(error.status));
-        showError("code" + JSON.stringify(error.code));
-        showError("cause" + JSON.stringify(error.cause));
       }
       return null;
     }
@@ -63,11 +71,13 @@ export const authApi = {
 
   refresh: async (dto: RefreshTokenDto): Promise<Tokens> => {
     const response = await api.post("/auth/refresh", dto);
+    setTokens(response.data);
     return response.data;
   },
 
   logout: async (): Promise<void> => {
     await api.post("/auth/logout");
+    clearTokens();
   },
 
   me: async (): Promise<MeResponse> => {

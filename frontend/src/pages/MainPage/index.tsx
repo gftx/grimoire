@@ -46,9 +46,6 @@ export const MainPage = () => {
       <div className={styles.fantasyQuote}>{randomQuote}</div>
       {isAuthenticated ? (
         <div className={styles.authenticated}>
-          <h1 className={styles.title}>welcome back, {user.username}</h1>
-          <p className={styles.subtitle}>your available features</p>
-
           <div className={styles.features}>
             <Link to={AppRoutes.VAULT} className={styles.featureCard}>
               <h2>vault</h2>

@@ -1,106 +1,65 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { authService } from '@/shared/services/AuthService';
-import { useLoadingStore } from '@/store/loading';
+import { getAccessToken, clearTokens } from './token';
+
+// To skip global 401 refresh logic for a request, pass { skipAuthRefresh: true } in axios config
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  skipAuthRefresh?: boolean;
+  _retry?: boolean;
+}
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3001',
   withCredentials: true,
 });
 
-// Очередь запросов, которые ждут новый access token
-const failedQueue: Array<{
-  resolve: (value?: unknown) => void;
-  reject: (reason?: unknown) => void;
-}> = [];
-
 let isRefreshing = false;
+const queue: Array<(token: string | null) => void> = [];
 
-const processQueue = (error: AxiosError | null, token: string | null) => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve(token);
-    }
-  });
-
-  failedQueue.length = 0;
-};
-
-api.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken && config.headers) {
-      config.headers['Authorization'] = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+api.interceptors.request.use((config) => {
+  const token = getAccessToken();
+  if (token && config.headers) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
 
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      const loadingStore = useLoadingStore.getState();
-
-      // ⚡  Если запрос шёл на logout — НЕ рефрешим, просто падаем
-      if (originalRequest.url?.includes('/auth/logout')) {
-        loadingStore.setLoading(false);
-        return Promise.reject(error);
-      }
-
-      // ⚡  Если кто-то уже рефрешит — ставим запрос в очередь
+    const original = error.config as CustomAxiosRequestConfig;
+    if (
+      error.response?.status === 401 &&
+      !original._retry &&
+      !original.skipAuthRefresh
+    ) {
+      if (original.url?.includes('/auth/logout')) return Promise.reject(error);
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            if (originalRequest.headers && token) {
-              originalRequest.headers['Authorization'] = `Bearer ${token}`;
-            }
-            return api(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+        return new Promise((resolve) => queue.push((token) => {
+          if (token && original.headers) original.headers['Authorization'] = `Bearer ${token}`;
+          resolve(api(original));
+        }));
       }
-
-      // ⚡  Начинаем рефреш токенов
-      originalRequest._retry = true;
+      original._retry = true;
       isRefreshing = true;
-      loadingStore.setLoading(true);
-
       try {
         await authService.refreshTokens();
-        const newAccessToken = localStorage.getItem('accessToken');
-        
-        if (originalRequest.headers && newAccessToken) {
-          originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-        }
-
-        processQueue(null, newAccessToken);
-        return api(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError as AxiosError, null);
-      
-        loadingStore.setLoading(false);
-        isRefreshing = false;
-      
+        const token = getAccessToken();
+        queue.forEach((cb) => cb(token));
+        queue.length = 0;
+        if (token && original.headers) original.headers['Authorization'] = `Bearer ${token}`;
+        return api(original);
+      } catch (e) {
+        queue.forEach((cb) => cb(null));
+        queue.length = 0;
         await authService.logout();
-      
-        const currentPath = window.location.pathname;
-        if (currentPath !== '/login' && currentPath !== '/register') {
-          window.location.href = '/login';
-        }
-      
-        return Promise.reject(refreshError);
+        clearTokens();
+        if (!['/login', '/register'].includes(window.location.pathname)) window.location.href = '/login';
+        return Promise.reject(e);
       } finally {
-        loadingStore.setLoading(false);
         isRefreshing = false;
       }
     }
-
     return Promise.reject(error);
   }
 );

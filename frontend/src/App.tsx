@@ -2,7 +2,6 @@ import { RoutesPage } from "./Routes";
 import { Loader } from "./shared/ui/Loader";
 import { Header } from "./shared/ui/Header";
 import { Toaster } from 'react-hot-toast';
-import { Footer } from '@/shared/ui/Footer/index';
 
 export const App = () => {
   return (
@@ -25,7 +24,6 @@ export const App = () => {
           }}
         />
       </div>
-      <Footer />
     </div>
   );
 };

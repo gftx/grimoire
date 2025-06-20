@@ -12,7 +12,7 @@ const NAV_ITEMS = [
   { to: AppRoutes.VAULT, label: 'vault' },
   { to: AppRoutes.JOURNAL, label: 'journal' },
   { to: AppRoutes.TODAY, label: 'today' },
-  { to: AppRoutes.KANBAN, label: 'kanban' },
+  // { to: AppRoutes.KANBAN, label: 'kanban' },
 ];
 
 export const Header = () => {

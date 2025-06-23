@@ -6,6 +6,16 @@ import styles from "./styles.module.scss";
 import { ResponsiveDatePicker } from "@/shared/ui/DatePicker";
 import dayjs from "dayjs";
 
+// Debounce hook
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+
 export const JournalPage = () => {
   const [entry, setEntry] = useState<JournalEntry | null>(null);
   const [content, setContent] = useState("");
@@ -13,6 +23,7 @@ export const JournalPage = () => {
   const [saving, setSaving] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const selectedISO = selectedDate.toISOString().slice(0, 10);
+  const debouncedContent = useDebounce(content, 1500);
 
   useEffect(() => {
     setLoading(true);
@@ -23,6 +34,26 @@ export const JournalPage = () => {
       setLoading(false);
     });
   }, [selectedISO]);
+
+  useEffect(() => {
+    if (loading) return; // Don't autosave while loading
+    if (!debouncedContent.trim()) return;
+    if (debouncedContent === (entry?.content ?? "")) return;
+    // Autosave
+    (async () => {
+      if (entry) {
+        setSaving(true);
+        const updated = await journalApi.update(entry.id, { content: debouncedContent });
+        setEntry(updated);
+        setSaving(false);
+      } else {
+        setSaving(true);
+        const created = await journalApi.create({ date: selectedISO, content: debouncedContent });
+        setEntry(created);
+        setSaving(false);
+      }
+    })();
+  }, [debouncedContent, entry, loading, selectedISO]);
 
   const handleSave = async () => {
     setSaving(true);

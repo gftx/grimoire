@@ -3,7 +3,7 @@ import { todosApi } from "@/entities/todo/api";
 import { Todo } from "@/entities/todo/types";
 import styles from "./styles.module.scss";
 import { startOfToday, subDays, addDays } from "date-fns";
-import { Trash2 } from "lucide-react";
+import { Trash2, MoveLeftIcon, MoveRightIcon } from "lucide-react";
 import { ResponsiveDatePicker } from "@/shared/ui/DatePicker";
 import dayjs from "dayjs";
 import { TextField, Button } from "@mui/material";
@@ -96,44 +96,40 @@ export const TodayPage = () => {
               gap: 8,
               justifyContent: "center",
               marginBottom: 8,
-              flexWrap: "wrap",
             }}
           >
             <button
               type='button'
               className={styles.addButton}
-              style={{ padding: "8px 14px" }}
               onClick={() => handleNav(-1)}
             >
-              Вчера
+              <MoveLeftIcon />
             </button>
             <button
               type='button'
               className={styles.addButton}
-              style={{ padding: "8px 14px" }}
               onClick={() => setSelectedDate(startOfToday())}
             >
-              Сегодня
+              Today
             </button>
             <button
               type='button'
               className={styles.addButton}
-              style={{ padding: "8px 14px" }}
               onClick={() => handleNav(1)}
             >
-              Завтра
+              <MoveRightIcon />
             </button>
           </div>
-          <div className={styles.inputRaw} style={{ alignItems: "center" }}>
+          <div className={styles.inputRaw}>
             <ResponsiveDatePicker
               value={dayjs(selectedDate)}
               onChange={(d) => setSelectedDate(d.toDate())}
               textFieldProps={{ className: styles.datePicker }}
             />
             <TextField
-              variant="outlined"
-              size="small"
-              placeholder="Что нужно сделать?"
+              variant='outlined'
+              size='small'
+              placeholder='Что нужно сделать?'
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               className={styles.input}
@@ -143,8 +139,8 @@ export const TodayPage = () => {
               onClick={handleCreate}
               disabled={loading || !newTask.trim()}
               className={styles.addButton}
-              variant="contained"
-              color="primary"
+              variant='contained'
+              color='primary'
               sx={{ minWidth: 120, height: 40 }}
             >
               Добавить

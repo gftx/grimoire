@@ -1,14 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { journalApi } from "@/entities/journal/api";
 import { JournalEntry } from "@/entities/journal/types";
 import { TiptapEditor } from "@/shared/ui/TipTapEditor";
 import styles from "./styles.module.scss";
-import { DayPicker } from "react-day-picker";
-import "react-day-picker/dist/style.css";
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
-}
+import { ResponsiveDatePicker } from "@/shared/ui/DatePicker";
+import dayjs from "dayjs";
 
 export const JournalPage = () => {
   const [entry, setEntry] = useState<JournalEntry | null>(null);
@@ -16,8 +12,6 @@ export const JournalPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [showCalendar, setShowCalendar] = useState(false);
-  const calendarRef = useRef<HTMLDivElement>(null);
   const selectedISO = selectedDate.toISOString().slice(0, 10);
 
   useEffect(() => {
@@ -29,18 +23,6 @@ export const JournalPage = () => {
       setLoading(false);
     });
   }, [selectedISO]);
-
-  // Close calendar on outside click
-  useEffect(() => {
-    if (!showCalendar) return;
-    function handleClick(e: MouseEvent) {
-      if (calendarRef.current && !calendarRef.current.contains(e.target as Node)) {
-        setShowCalendar(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [showCalendar]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -59,32 +41,11 @@ export const JournalPage = () => {
   return (
     <div className={styles.journalPageContainer}>
       <div className={styles.journalDateRow}>
-        <span className={styles.journalDate}>{formatDate(selectedDate)}</span>
-        <button
-          className={styles.calendarButton}
-          aria-label="Pick date"
-          onClick={() => setShowCalendar((v) => !v)}
-        >
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="4"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        </button>
-        {showCalendar && (
-          <div className={styles.calendarModal} ref={calendarRef}>
-            <DayPicker
-              mode="single"
-              selected={selectedDate}
-              onSelect={date => {
-                if (date) {
-                  setSelectedDate(date);
-                  setShowCalendar(false);
-                }
-              }}
-              weekStartsOn={1}
-              showOutsideDays={false}
-              fixedWeeks
-              className={styles.dayPicker}
-            />
-          </div>
-        )}
+        <ResponsiveDatePicker
+          value={dayjs(selectedDate)}
+          onChange={d => setSelectedDate(d.toDate())}
+          textFieldProps={{ className: styles.datePicker }}
+        />
       </div>
       <div className={styles.journalEditor}>
         <TiptapEditor content={content} onChange={setContent} />

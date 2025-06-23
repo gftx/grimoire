@@ -4,7 +4,6 @@ import { AppRoutes } from "@/shared/config/routes";
 import styles from "./styles.module.scss";
 import gendalf from "@/shared/assets/gendalf.png";
 import { useMemo } from "react";
-// import { Footer } from "@/shared/ui/Footer/index";
 
 const FANTASY_QUOTES = [
   'not all those who wander are lost. – j.r.r. tolkien',

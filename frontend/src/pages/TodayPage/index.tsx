@@ -88,7 +88,7 @@ export const TodayPage = () => {
   return (
     <main className={styles.todayPage}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Задачи</h1>
+        <h1 className={styles.title}>Todo</h1>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <div
             style={{
@@ -129,7 +129,7 @@ export const TodayPage = () => {
             <TextField
               variant='outlined'
               size='small'
-              placeholder='Что нужно сделать?'
+              placeholder='whats next?'
               value={newTask}
               onChange={(e) => setNewTask(e.target.value)}
               className={styles.input}
@@ -143,7 +143,7 @@ export const TodayPage = () => {
               color='primary'
               sx={{ minWidth: 120, height: 40 }}
             >
-              Добавить
+              Add
             </Button>
           </div>
         </div>
@@ -151,7 +151,7 @@ export const TodayPage = () => {
 
       {yesterdayTodos.length > 0 && (
         <section className={styles.yesterdaySection}>
-          <h2>🔁 Невыполненные задачи со вчера:</h2>
+          <h2>🔁 Yesterday tasks:</h2>
           <ul className={styles.todoList}>
             {yesterdayTodos.map((todo) => (
               <li key={todo.id} className={styles.todoItem}>

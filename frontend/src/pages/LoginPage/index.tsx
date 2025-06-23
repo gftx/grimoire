@@ -16,7 +16,7 @@ export const LoginPage = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await authService.login(data.email, data.password);
-      navigate(AppRoutes.ME);
+      navigate(AppRoutes.ROOT);
     } catch (error) {
       console.error('Login failed', error);
       // В будущем можно показать уведомление

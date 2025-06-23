@@ -2,28 +2,29 @@ import { useEffect, useState } from "react";
 import { todosApi } from "@/entities/todo/api";
 import { Todo } from "@/entities/todo/types";
 import styles from "./styles.module.scss";
-import { formatISO, startOfToday, subDays } from "date-fns";
+import { startOfToday, subDays, addDays } from "date-fns";
 import { Trash2 } from "lucide-react";
+import { ResponsiveDatePicker } from "@/shared/ui/DatePicker";
+import dayjs from "dayjs";
+import { TextField, Button } from "@mui/material";
 
 export const TodayPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<Record<string, Partial<Todo>>>(
     {},
   );
-  const [selectedDate, setSelectedDate] = useState(
-    formatISO(startOfToday(), { representation: "date" }),
-  );
+  const [selectedDate, setSelectedDate] = useState<Date>(startOfToday());
   const [todos, setTodos] = useState<Todo[]>([]);
   const [yesterdayTodos, setYesterdayTodos] = useState<Todo[]>([]);
   const [newTask, setNewTask] = useState("");
   const [loading, setLoading] = useState(false);
 
   const loadTodos = async () => {
-    const isoDate = new Date(selectedDate).toISOString();
+    const isoDate = selectedDate.toISOString();
     const todayTodos = await todosApi.getByDate(isoDate);
     setTodos(todayTodos);
 
-    const yesterday = subDays(new Date(selectedDate), 1).toISOString();
+    const yesterday = subDays(selectedDate, 1).toISOString();
     const allYesterday = await todosApi.getByDate(yesterday);
     const uncompleted = allYesterday.filter((todo) => !todo.completed);
     setYesterdayTodos(uncompleted);
@@ -79,33 +80,76 @@ export const TodayPage = () => {
     await loadTodos();
   };
 
+  // Helper for navigation buttons
+  const handleNav = (days: number) => {
+    setSelectedDate(addDays(selectedDate, days));
+  };
+
   return (
     <main className={styles.todayPage}>
       <div className={styles.header}>
-        <h1 className={styles.title}>📅 Задачи</h1>
-
-        <div className={styles.inputRaw}>
-          <input
-            type='date'
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className={styles.datePicker}
-          />
-
-          <input
-            type='text'
-            placeholder='Что нужно сделать?'
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            className={styles.input}
-          />
-          <button
-            onClick={handleCreate}
-            disabled={loading || !newTask.trim()}
-            className={styles.addButton}
+        <h1 className={styles.title}>Задачи</h1>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+              justifyContent: "center",
+              marginBottom: 8,
+              flexWrap: "wrap",
+            }}
           >
-            Добавить
-          </button>
+            <button
+              type='button'
+              className={styles.addButton}
+              style={{ padding: "8px 14px" }}
+              onClick={() => handleNav(-1)}
+            >
+              Вчера
+            </button>
+            <button
+              type='button'
+              className={styles.addButton}
+              style={{ padding: "8px 14px" }}
+              onClick={() => setSelectedDate(startOfToday())}
+            >
+              Сегодня
+            </button>
+            <button
+              type='button'
+              className={styles.addButton}
+              style={{ padding: "8px 14px" }}
+              onClick={() => handleNav(1)}
+            >
+              Завтра
+            </button>
+          </div>
+          <div className={styles.inputRaw} style={{ alignItems: "center" }}>
+            <ResponsiveDatePicker
+              value={dayjs(selectedDate)}
+              onChange={(d) => setSelectedDate(d.toDate())}
+              textFieldProps={{ className: styles.datePicker }}
+            />
+            <TextField
+              variant="outlined"
+              size="small"
+              placeholder="Что нужно сделать?"
+              value={newTask}
+              onChange={(e) => setNewTask(e.target.value)}
+              className={styles.input}
+              fullWidth
+            />
+            <Button
+              onClick={handleCreate}
+              disabled={loading || !newTask.trim()}
+              className={styles.addButton}
+              variant="contained"
+              color="primary"
+              sx={{ minWidth: 120, height: 40 }}
+            >
+              Добавить
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -115,20 +159,94 @@ export const TodayPage = () => {
           <ul className={styles.todoList}>
             {yesterdayTodos.map((todo) => (
               <li key={todo.id} className={styles.todoItem}>
-                <label className={styles.todoLabel}>
-                  <input
-                    type='checkbox'
-                    checked={todo.completed}
-                    onChange={() => toggleCompleted(todo.id, todo.completed)}
-                  />
-                  <span
-                    className={`${styles.todoText} ${
-                      todo.completed ? styles.completed : ""
-                    }`}
+                {editingId === todo.id ? (
+                  <div className={styles.editForm}>
+                    <input
+                      type='text'
+                      value={editValues[todo.id]?.title ?? todo.title}
+                      onChange={(e) =>
+                        handleEditChange(todo.id, "title", e.target.value)
+                      }
+                      className={styles.input}
+                    />
+                    <textarea
+                      placeholder='Описание'
+                      value={
+                        editValues[todo.id]?.description ??
+                        todo.description ??
+                        ""
+                      }
+                      onChange={(e) =>
+                        handleEditChange(todo.id, "description", e.target.value)
+                      }
+                      className={styles.textarea}
+                    />
+                    <input
+                      type='text'
+                      placeholder='Тег'
+                      value={editValues[todo.id]?.tag ?? todo.tag ?? ""}
+                      onChange={(e) =>
+                        handleEditChange(todo.id, "tag", e.target.value)
+                      }
+                      className={styles.input}
+                    />
+                    <div className={styles.editActions}>
+                      <button onClick={() => setEditingId(null)}>Отмена</button>
+                      <button onClick={() => handleEditSubmit(todo.id)}>
+                        Сохранить
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={styles.todoCard}
+                    onClick={() => setEditingId(todo.id)}
                   >
-                    {todo.title}
-                  </span>
-                </label>
+                    <label
+                      className={styles.todoLabel}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <input
+                        type='checkbox'
+                        checked={todo.completed}
+                        onChange={() =>
+                          toggleCompleted(todo.id, todo.completed)
+                        }
+                      />
+                    </label>
+
+                    <div className={styles.todoContent}>
+                      <span
+                        className={`${styles.todoText} ${
+                          todo.completed ? styles.completed : ""
+                        }`}
+                      >
+                        {todo.title}
+                      </span>
+
+                      {todo.description && (
+                        <p className={styles.todoDescription}>
+                          {todo.description.slice(0, 50)}
+                          {todo.description.length > 50 && "..."}
+                        </p>
+                      )}
+
+                      {todo.tag && (
+                        <span className={styles.todoTag}>#{todo.tag}</span>
+                      )}
+                    </div>
+
+                    <button
+                      className={styles.deleteButton}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(todo.id);
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

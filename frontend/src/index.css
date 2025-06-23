@@ -41,7 +41,7 @@ textarea {
 /* Базовые стили body */
 body {
   min-height: 100vh;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   color: #111827;
@@ -73,5 +73,5 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Cinzel Decorative', 'Georgia', serif;
+  font-family: 'Montserrat';
 }

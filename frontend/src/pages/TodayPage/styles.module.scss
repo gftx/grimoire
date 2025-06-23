@@ -1,5 +1,5 @@
 .todayPage {
-  padding: 24px;
+  padding: 12px;
   max-width: 700px;
   margin: 0 auto;
 }
@@ -41,6 +41,11 @@
 
 .yesterdaySection {
   margin-top: 32px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
 
   h2 {
     font-size: 18px;
@@ -226,11 +231,6 @@
 
   .addButton {
     width: 100%;
-  }
-
-  .todoCard {
-    flex-direction: column;
-    align-items: flex-start;
   }
 
   .todoText {

@@ -52,6 +52,11 @@ export const MainPage = () => {
               <p>store and grow your ideas, drafts, scripts, and notes.</p>
             </Link>
 
+            <Link to={AppRoutes.TODAY} className={styles.featureCard}>
+              <h2>todo</h2>
+              <p>track your daily tasks and activities.</p>
+            </Link>
+
             <Link to={AppRoutes.JOURNAL} className={styles.featureCard}>
               <h2>journal</h2>
               <p>track your daily thoughts and activities.</p>

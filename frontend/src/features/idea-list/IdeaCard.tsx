@@ -2,6 +2,11 @@ import { FC, useState } from "react";
 import { Idea } from "@/entities/idea/types";
 import { useIdeasStore } from "@/entities/idea/store";
 import { Modal } from "@/shared/ui/Modal";
+import { todosApi } from "@/entities/todo/api";
+import { startOfToday } from "date-fns";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import { PlusCircle, Trash2 } from "lucide-react";
 
 import styles from "./styles.module.scss";
 interface IdeaCardProps {
@@ -11,10 +16,9 @@ interface IdeaCardProps {
 export const IdeaCard: FC<IdeaCardProps> = ({ idea }) => {
   const { removeIdea } = useIdeasStore();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [creatingTask, setCreatingTask] = useState(false);
 
-  const handleDelete = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  ) => {
+  const handleDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.stopPropagation();
     setIsModalOpen(true);
   };
@@ -22,28 +26,55 @@ export const IdeaCard: FC<IdeaCardProps> = ({ idea }) => {
   const handleDeleteConfirm = () => {
     removeIdea(idea.id);
     setIsModalOpen(false);
-  }
+  };
+
+  const handleCreateTask = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    e.stopPropagation();
+    setCreatingTask(true);
+    try {
+      await todosApi.create({
+        title: idea.title,
+        description: idea.description,
+        tag: idea.tags[0],
+        date: startOfToday().toISOString(),
+        completed: false,
+      });
+    } finally {
+      setCreatingTask(false);
+    }
+  };
 
   return (
     <>
       <div className={styles.ideaCard}>
         <h3 className={styles.title}>{idea.title}</h3>
 
-        <div className={styles.controls}>
+        <div>
+          <Tooltip
+            className={styles.addTodo}
+            title={"Create task"}
+            placement='bottom'
+          >
+            <span>
+              <IconButton
+                onClick={handleCreateTask}
+                disabled={creatingTask}
+                size='small'
+                aria-label='Create task'
+              >
+                <PlusCircle size={16} />
+              </IconButton>
+            </span>
+          </Tooltip>
           <button
             className={styles.deleteButton}
             onClick={(e) => handleDelete(e)}
             aria-label='Delete idea'
           >
-            ✖
+            <Trash2 size={16} />
           </button>
-        </div>
-
-        <div className={styles.meta}>
-          <span className={styles.type}>{idea.type.toLowerCase()}</span>
-          <span className={styles.status}>
-            {idea.status === "DRAFT" ? "Draft" : "Published"}
-          </span>
         </div>
 
         {idea.tags.length > 0 && (

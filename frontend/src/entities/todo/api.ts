@@ -25,4 +25,9 @@ export const todosApi = {
   async delete(id: string): Promise<void> {
     await api.delete(`/todo/${id}`);
   },
+
+  async transferToNextDay(id: string): Promise<Todo> {
+    const response = await api.patch<Todo>(`/todo/${id}/transfer-next-day`);
+    return response.data;
+  },
 };

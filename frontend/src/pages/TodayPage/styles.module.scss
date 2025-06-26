@@ -184,6 +184,24 @@
   }
 }
 
+.transferButton {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #9ca3af;
+  margin-left: 4px;
+  transition: color 0.2s ease;
+
+  &:hover:not(:disabled) {
+    color: #4f46e5;
+  }
+
+  &:disabled {
+    color: #c7d2fe;
+    cursor: not-allowed;
+  }
+}
+
 .editForm {
   display: flex;
   flex-direction: column;

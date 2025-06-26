@@ -52,4 +52,19 @@ export class TodoService {
   async remove(userId: string, id: string) {
     return this.prisma.todo.delete({ where: { id } });
   }
+
+  async transferToNextDay(userId: string, id: string) {
+    // Get the current todo
+    const todo = await this.prisma.todo.findUnique({ where: { id } });
+    if (!todo) throw new Error('Todo not found');
+    // Add one day to the current date
+    const currentDate = new Date(todo.date);
+    const nextDay = new Date(currentDate);
+    nextDay.setDate(currentDate.getDate() + 1);
+    // Update the todo's date
+    return this.prisma.todo.update({
+      where: { id },
+      data: { date: nextDay },
+    });
+  }
 }

@@ -26,7 +26,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 
   &:hover {
     border-color: #7f5af0;
@@ -44,14 +44,21 @@
   color: #e63946;
   cursor: pointer;
   transition: color 0.2s;
+  padding: 0 5px;
 
   &:hover {
     color: #ff0000;
   }
 }
 
+.addTodo {
+  position: absolute;
+  top: 30px;
+  right: 8px;
+}
+
 .title {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 20px;
   font-weight: 400;
   margin: 0 0 16px 0;

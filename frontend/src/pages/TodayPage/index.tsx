@@ -85,6 +85,21 @@ export const TodayPage = () => {
     setSelectedDate(addDays(selectedDate, days));
   };
 
+  // Handler for transferring todo to next day
+  const handleTransferNextDay = async (
+    id: string,
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.stopPropagation();
+    setLoading(true);
+    try {
+      await todosApi.transferToNextDay(id);
+      await loadTodos();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className={styles.todayPage}>
       <div className={styles.header}>
@@ -134,6 +149,15 @@ export const TodayPage = () => {
               onChange={(e) => setNewTask(e.target.value)}
               className={styles.input}
               fullWidth
+              onKeyDown={(e) => {
+                if (
+                  e.key === 'Enter' &&
+                  !loading &&
+                  newTask.trim()
+                ) {
+                  handleCreate();
+                }
+              }}
             />
             <Button
               onClick={handleCreate}
@@ -241,6 +265,14 @@ export const TodayPage = () => {
                     >
                       <Trash2 size={16} />
                     </button>
+                    <button
+                      className={styles.transferButton}
+                      onClick={(e) => handleTransferNextDay(todo.id, e)}
+                      disabled={loading}
+                      title="Transfer to next day"
+                    >
+                      <MoveRightIcon size={16} />
+                    </button>
                   </div>
                 )}
               </li>
@@ -333,6 +365,14 @@ export const TodayPage = () => {
                   }}
                 >
                   <Trash2 size={16} />
+                </button>
+                <button
+                  className={styles.transferButton}
+                  onClick={(e) => handleTransferNextDay(todo.id, e)}
+                  disabled={loading}
+                  title="Transfer to next day"
+                >
+                  <MoveRightIcon size={16} />
                 </button>
               </div>
             )}

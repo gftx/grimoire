@@ -52,6 +52,14 @@ export class TodoController {
     return this.todoService.toggleCompleted(user.userId, id, completed);
   }
 
+  @Patch(':id/transfer-next-day')
+  transferNextDay(
+    @RequestUser() user: { userId: string },
+    @Param('id') id: string,
+  ) {
+    return this.todoService.transferToNextDay(user.userId, id);
+  }
+
   @Delete(':id')
   remove(@RequestUser() user: { userId: string }, @Param('id') id: string) {
     return this.todoService.remove(user.userId, id);
